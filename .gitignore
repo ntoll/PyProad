@@ -1,6 +1,7 @@
 *.pyc
 *.swp
 *.log
+validkeys.py
 MANIFEST
 build/
 dist/

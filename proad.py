@@ -6,6 +6,8 @@ import urllib
 import hashlib
 import hmac
 import base64
+import httplib2
+import datetime
 from xml.dom.minidom import parseString, Document
 
 # To hold a valid access key
@@ -83,11 +85,15 @@ class Request(object):
         self.locale = locale
         self.NameValuePairs = kwargs
 
-    def callApi(page=0):
+    def callApi(self, page=0):
         """
         Makes a RESTful call to the Product Advertising API and returns the
         resulting XML for further processing.
 
-        :param page: the page of results to return (defaults to)
+        :param page: the page of results to return (defaults to first page)
         """
-        return Document()
+        timestamp = datetime.datetime.utcnow().isoformat()
+        url = buildUrl(self.locale, timestamp, **self.NameValuePairs)
+        http = httplib2.Http()
+        headers, content = http.request(url, 'GET')
+        return parseString(content)

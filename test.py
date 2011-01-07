@@ -10,6 +10,15 @@ class TestProad(unittest.TestCase):
         proad.ACCESS_KEY = 'ABCDEFGH2NOP3RSTUVWX'
         proad.SECRET_KEY = 'aUH4dbfXK2IThI5ISnOTvAlidO7od7W0kwTrfMBV'
 
+    def grabValidKey(self):
+        """
+        Will attempt to import ACCESS_KEY and SECRET_KEY containing *valid*
+        keys from the module validkeys.py
+        """
+        import validkeys
+        proad.ACCESS_KEY = validkeys.ACCESS_KEY
+        proad.SECRET_KEY = validkeys.SECRET_KEY
+
     def testBuildUrl(self):
         """
         Make sure the expected correctly signed URL comes back from the
@@ -45,6 +54,7 @@ class TestProad(unittest.TestCase):
         """
         Make sure that a result is returned when calling the API
         """
+        self.grabValidKey()
         r = proad.Request('us', Operation='ItemSearch', SearchIndex='Books',
             Keywords='harry potter')
         # The simple good case
