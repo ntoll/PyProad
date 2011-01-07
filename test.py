@@ -1,5 +1,6 @@
 import unittest
 import proad
+from xml.dom.minidom import Document
 
 
 class TestProad(unittest.TestCase):
@@ -27,3 +28,25 @@ class TestProad(unittest.TestCase):
             Operation='ItemSearch', SearchIndex='Books',
             Keywords='harry potter')
         self.assertEqual(expected, actual)
+
+    def testRequestInit(self):
+        """
+        Makes sure the __init__ method sets up a Request class instance
+        correctly.
+        """
+        r = proad.Request('uk', Operation='ItemSearch', SearchIndex='Books',
+            Keywords='harry potter')
+        self.assertEquals('uk', r.locale)
+        self.assertEquals(3, len(r.NameValuePairs))
+        for name in ['Operation', 'SearchIndex', 'Keywords']:
+            self.assertTrue(name in r.NameValuePairs)
+
+    def testCallApi(self):
+        """
+        Make sure that a result is returned when calling the API
+        """
+        r = proad.Request('us', Operation='ItemSearch', SearchIndex='Books',
+            Keywords='harry potter')
+        # The simple good case
+        result = r.callApi()
+        self.assertTrue(isinstance(result, Document))

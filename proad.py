@@ -6,6 +6,7 @@ import urllib
 import hashlib
 import hmac
 import base64
+from xml.dom.minidom import parseString
 
 # To hold a valid access key
 ACCESS_KEY = ''
@@ -81,3 +82,12 @@ class Request(object):
         """
         self.locale = locale
         self.NameValuePairs = kwargs
+
+    def callApi(page=0):
+        """
+        Makes a RESTful call to the Product Advertising API and returns the
+        resulting XML for further processing.
+
+        :param page: the page of results to return (defaults to)
+        """
+        pass
