@@ -50,3 +50,5 @@ class TestProad(unittest.TestCase):
         # The simple good case
         result = r.callApi()
         self.assertTrue(isinstance(result, Document))
+        # and we have an expected tag from Amazon in the resulting document
+        self.assertTrue(result.getElementsByTagName('ItemSearchResponse'))
