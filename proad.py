@@ -28,13 +28,14 @@ SUPPORTED_LOCALES = {
     "ca": "ecs.amazonaws.ca"}
 
 
-def buildUrl(locale, timestamp, **kwargs):
+def buildUrl(locale, timestamp, page=None, **kwargs):
     """
     Builds the correctly signed URL for a request. The ACCESS_KEY and
     SECRET_KEY values must be set to the appropriate values.
 
     :param locale: the API locale ['us', 'uk', 'de', 'jp', 'fr', 'ca']
     :param timestamp: current UTC timestamp (e.g. "2011-01-06T16:57:32.000")
+    :param page: indicates specific page of results to return (default: None)
     :param kwargs: other name-value pairs used to build the request
 
     For example, to build a URL for searching books with the term "harry
@@ -50,6 +51,8 @@ def buildUrl(locale, timestamp, **kwargs):
     namedValuePairs['Timestamp'] = timestamp
     namedValuePairs['AWSAccessKeyId'] = ACCESS_KEY
     namedValuePairs['Version'] = VERSION
+    if page:
+        namedValuePairs['ItemPage'] = str(page)
     # 2) Sort the name-value pairs
     sortedPairs = ['%s=%s' % (n, urllib.quote(v))
         for n, v in namedValuePairs.iteritems()]
@@ -85,7 +88,7 @@ class Request(object):
         self.locale = locale
         self.NameValuePairs = kwargs
 
-    def callApi(self, page=0):
+    def callApi(self, page=None):
         """
         Makes a RESTful call to the Product Advertising API and returns the
         resulting XML for further processing.
@@ -93,7 +96,7 @@ class Request(object):
         :param page: the page of results to return (defaults to first page)
         """
         timestamp = datetime.datetime.utcnow().isoformat()
-        url = buildUrl(self.locale, timestamp, **self.NameValuePairs)
+        url = buildUrl(self.locale, timestamp, page, **self.NameValuePairs)
         http = httplib2.Http()
         headers, content = http.request(url, 'GET')
         return parseString(content)

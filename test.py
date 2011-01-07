@@ -32,9 +32,16 @@ class TestProad(unittest.TestCase):
         (Making sure to update the timestamp value you pass into the buildUrl
         function).
         """
+        # default case without page specification
         expected = 'http://ecs.amazonaws.com/onca/xml?AWSAccessKeyId=ABCDEFGH2NOP3RSTUVWX&Keywords=harry%20potter&Operation=ItemSearch&SearchIndex=Books&Service=AWSECommerceService&Timestamp=2011-01-06T22%3A44%3A09.000Z&Version=2010-11-01&Signature=lKDTW0%2BlpBoFgmY8Waj3AZDHvk%2FqQ%2BQ%2FFASw5RNgtkM%3D'
         actual = proad.buildUrl('us', timestamp='2011-01-06T22:44:09.000Z',
             Operation='ItemSearch', SearchIndex='Books',
+            Keywords='harry potter')
+        self.assertEqual(expected, actual)
+        # build a URL with a page of results specified
+        expected = 'http://ecs.amazonaws.com/onca/xml?AWSAccessKeyId=ABCDEFGH2NOP3RSTUVWX&ItemPage=42&Keywords=harry%20potter&Operation=ItemSearch&SearchIndex=Books&Service=AWSECommerceService&Timestamp=2011-01-06T22%3A44%3A09.000Z&Version=2010-11-01&Signature=fBinX%2FxvOaPG9mOI1irl3mYiRA8Ibe0aB7%2Fw0h%2B6dGU%3D'
+        actual = proad.buildUrl('us', timestamp='2011-01-06T22:44:09.000Z',
+            page=42, Operation='ItemSearch', SearchIndex='Books',
             Keywords='harry potter')
         self.assertEqual(expected, actual)
 
@@ -57,8 +64,14 @@ class TestProad(unittest.TestCase):
         self.grabValidKey()
         r = proad.Request('us', Operation='ItemSearch', SearchIndex='Books',
             Keywords='harry potter')
-        # The simple good case
+        # The simple good case (with default first page)
         result = r.callApi()
         self.assertTrue(isinstance(result, Document))
         # and we have an expected tag from Amazon in the resulting document
         self.assertTrue(result.getElementsByTagName('ItemSearchResponse'))
+        # now check it's possible to get a specific page from the results
+        result = r.callApi(42)
+        # make sure the correct page is, in fact, returned
+        itemPage = result.getElementsByTagName('ItemPage')
+        self.assertEquals(1, len(itemPage))
+        self.assertEquals('42', itemPage[0].firstChild.wholeText)
