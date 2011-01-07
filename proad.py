@@ -6,7 +6,7 @@ import urllib
 import hashlib
 import hmac
 import base64
-from xml.dom.minidom import parseString
+from xml.dom.minidom import parseString, Document
 
 # To hold a valid access key
 ACCESS_KEY = ''
@@ -90,4 +90,4 @@ class Request(object):
 
         :param page: the page of results to return (defaults to)
         """
-        pass
+        return Document()
